@@ -24,9 +24,19 @@ User question
 
 System prompt: `app/ai/prompts/courier_guider_system.md`
 
+## Deploy (Render)
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/umermamtaz88-ai/courier-guider-api)
+
+Blueprint: `render.yaml` (free web service + free Postgres, 30-day DB limit).
+
+Set `LLM_*`, `TAVILY_API_KEY`, and `CORS_ORIGINS=https://customlogostic-frontend.vercel.app` in the Render dashboard.
+
+Production uses managed `DATABASE_URL` (not local `pgembed`).
+
 ## Stack
 
-FastAPI · uv · Neon PostgreSQL · pgvector · TSVECTOR · SQLAlchemy 2 · Alembic · OpenRouter/xAI/OpenAI
+FastAPI · uv · Neon/Render PostgreSQL · pgvector · TSVECTOR · SQLAlchemy 2 · Alembic · OpenRouter/xAI/OpenAI
 
 ## Quick start
 
