@@ -1,10 +1,17 @@
+# Courier Guider API on Render (native Python + free Postgres, 30-day limit)
+
 services:
   - type: web
     name: courier-guider-api
-    runtime: docker
+    runtime: python
     plan: free
+    region: oregon
+    buildCommand: pip install uv && uv sync --frozen --no-dev
+    startCommand: .venv/bin/alembic upgrade head && .venv/bin/uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health/ready
     envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.8"
       - key: APP_ENV
         value: production
       - key: DEBUG
