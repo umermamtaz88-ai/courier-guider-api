@@ -9,10 +9,13 @@ wheels/
 # Virtual environments
 .venv
 
-# Environment and storage
+# Environment and local object storage root (not package code)
 .env
-storage/
+/storage/
 .pgdata/
+
+# FastAPI Cloud local link (keep cloud.toml if you want team deploys)
+.fastapicloud/
 
 .pytest_cache/
 __pycache__/

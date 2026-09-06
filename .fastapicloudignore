@@ -1,0 +1,13 @@
+# Extra ignores for FastAPI Cloud uploads (gitignore still applies)
+tests/
+docs/
+.pytest_cache/
+*.md
+!README.md
+!app/ai/prompts/*.md
+scripts/
+research_smoke_results.json
+.pgdata/
+storage/
+Dockerfile
+render.yaml
