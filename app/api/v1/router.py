@@ -1,0 +1,27 @@
+from fastapi import APIRouter
+
+from app.api.v1 import admin, ai_health, address, ai, attachments, auth, cod, documents, exceptions, financial, issues, orders, providers, shipments, tasks, tenants, tracking, web_search_admin, webhooks
+
+api_router = APIRouter(prefix="/api/v1")
+api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+api_router.include_router(tenants.router, prefix="/tenants", tags=["tenants"])
+api_router.include_router(ai.router, prefix="/ai", tags=["ai"])
+api_router.include_router(attachments.router, prefix="/ai", tags=["attachments"])
+# Legacy shipment-management routes (optional â€” not required for RAG chatbot MVP)
+api_router.include_router(shipments.router, prefix="/shipments", tags=["legacy-shipments"])
+api_router.include_router(orders.router, prefix="/orders", tags=["legacy-orders"])
+api_router.include_router(exceptions.router, prefix="/exceptions", tags=["legacy-exceptions"])
+api_router.include_router(exceptions.ndr_router, tags=["legacy-ndr"])
+api_router.include_router(cod.router, prefix="/shipments", tags=["legacy-cod"])
+api_router.include_router(tracking.router, prefix="/shipments", tags=["legacy-tracking"])
+api_router.include_router(financial.router, prefix="/shipments", tags=["legacy-financial"])
+api_router.include_router(issues.router, prefix="/shipments", tags=["legacy-issues"])
+api_router.include_router(issues.issue_router, prefix="/issues", tags=["legacy-issues"])
+api_router.include_router(documents.router, tags=["legacy-documents"])
+api_router.include_router(tasks.router, prefix="/tasks", tags=["legacy-tasks"])
+api_router.include_router(address.router, prefix="/address", tags=["address"])
+api_router.include_router(providers.router, prefix="/providers", tags=["providers"])
+api_router.include_router(ai_health.router, prefix="/admin", tags=["admin-ai"])
+api_router.include_router(web_search_admin.router, prefix="/admin", tags=["admin-web-search"])
+api_router.include_router(admin.router, prefix="/admin", tags=["admin"])
+api_router.include_router(webhooks.router, prefix="/webhooks", tags=["webhooks"])
