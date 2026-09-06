@@ -8,6 +8,7 @@ docs/
 scripts/
 research_smoke_results.json
 .pgdata/
-storage/
+/storage/
 Dockerfile
 render.yaml
+!app/integrations/storage/

@@ -1,4 +1,5 @@
 from functools import lru_cache
+import re
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -10,7 +11,19 @@ def _normalize_database_url(url: str) -> str:
         url = "postgresql://" + url[len("postgres://") :]
     if url.startswith("postgresql://") and "+asyncpg" not in url:
         url = "postgresql+asyncpg://" + url[len("postgresql://") :]
+    # asyncpg does not accept libpq sslmode query params the same way; strip them.
+    # SSL is enabled separately in the engine for non-local hosts.
+    for key in ("sslmode", "channel_binding"):
+        url = re.sub(rf"([?&]){key}=[^&]*&?", r"\1", url)
+    url = url.rstrip("?&")
     return url
+
+
+def database_needs_ssl(url: str) -> bool:
+    lower = url.lower()
+    if "localhost" in lower or "127.0.0.1" in lower:
+        return False
+    return True
 
 
 class Settings(BaseSettings):
