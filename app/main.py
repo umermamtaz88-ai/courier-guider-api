@@ -1,4 +1,5 @@
 import uuid
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,6 +11,29 @@ from app.config import get_settings
 from app.logging import get_logger, setup_logging
 
 settings = get_settings()
+
+
+def _run_migrations() -> None:
+    """Apply Alembic migrations on boot in production (Neon/managed DB)."""
+    if settings.app_env not in {"production", "prod", "staging"}:
+        return
+    from alembic import command
+    from alembic.config import Config
+
+    logger = get_logger("courier_guider.migrations")
+    try:
+        cfg = Config("alembic.ini")
+        command.upgrade(cfg, "head")
+        logger.info("alembic_upgrade_complete")
+    except Exception as exc:
+        # Do not crash the app if schema is already applied or migrate fails transiently.
+        logger.error("alembic_upgrade_failed", error=str(exc))
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    _run_migrations()
+    yield
 
 
 def create_app() -> FastAPI:
@@ -37,6 +61,7 @@ def create_app() -> FastAPI:
         version=settings.app_version,
         docs_url="/docs",
         redoc_url="/redoc",
+        lifespan=lifespan,
     )
 
     app.add_middleware(

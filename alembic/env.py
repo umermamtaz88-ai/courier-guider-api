@@ -4,9 +4,9 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
-from sqlalchemy.ext.asyncio import async_engine_from_config
+from sqlalchemy.ext.asyncio import create_async_engine
 
-from app.config import get_settings
+from app.config import database_needs_ssl, get_settings
 from app.db.base import Base
 from app.db import models  # noqa: F401
 
@@ -40,11 +40,11 @@ def do_run_migrations(connection: Connection) -> None:
 
 
 async def run_async_migrations() -> None:
-    connectable = async_engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+    kwargs: dict = {"poolclass": pool.NullPool}
+    if database_needs_ssl(settings.database_url):
+        kwargs["connect_args"] = {"ssl": True}
+
+    connectable = create_async_engine(settings.database_url, **kwargs)
 
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)
